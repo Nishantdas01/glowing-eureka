@@ -6,7 +6,7 @@ const forwardedHost = process.env.CODESPACE_NAME && process.env.GITHUB_CODESPACE
   : null;
 
 export default defineConfig({
-  base: "/glowing-eureka/",
+  base: process.env.GITHUB_ACTIONS ? "/glowing-eureka/" : "/",
   server: {
     host: "0.0.0.0",
     port,
