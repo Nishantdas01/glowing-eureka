@@ -51,6 +51,7 @@ const ICONS = {
   chart: <><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-5 5" /><path d="M15 9h4v4" /></>,
   close: <><path d="m18 6-12 12M6 6l12 12" /></>,
   checkCircle: <><circle cx="12" cy="12" r="9" /><path d="m8 12 2.5 2.5L16 9" /></>,
+  info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>,
 };
 
 function Icon({ name, size = 18, className = "" }) {
@@ -272,6 +273,7 @@ function App() {
 
   return (
     <div className="app-shell">
+      <input ref={backupInputRef} type="file" accept="application/json,.json" onChange={importBackup} hidden />
       <aside className="sidebar">
         <a className="brand" href="#" onClick={(event) => { event.preventDefault(); setPage("overview"); }}>
           <span className="brand-mark">g</span>
@@ -287,13 +289,6 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <input ref={backupInputRef} type="file" accept="application/json,.json" onChange={importBackup} hidden />
-          <p className="sidebar-backup-note">
-            {text(language, "Records are saved in this browser. ", "रिकॉर्ड इस ब्राउज़र में सहेजे जाते हैं। ")}
-            <button onClick={() => backupInputRef.current?.click()}>{text(language, "Import backup", "बैकअप आयात करें")}</button>
-            {" · "}
-            <button onClick={exportBackup}>{text(language, "Export backup", "बैकअप निर्यात करें")}</button>
-          </p>
           <div className="kitchen-card"><span className="kitchen-icon"><Icon name="heart" size={16} /></span><strong>{text(language, "Made with care", "देखभाल से बनाया गया")}</strong><p>{text(language, "A little organization for your home kitchen.", "आपकी घरेलू रसोई के लिए आसान प्रबंधन।")}</p></div>
           <span className="version-label">{text(language, "YOUR PRIVATE KITCHEN", "आपकी निजी रसोई")}</span>
         </div>
@@ -316,7 +311,7 @@ function App() {
         {storageError && <div className="storage-alert" role="alert">{storageError}</div>}
         {storageNotice && <div className="storage-notice" role="status">{storageNotice}</div>}
         <div className="page-content">
-          {page === "overview" && <Overview language={language} data={data} todayOrders={todayOrders} todaySales={todaySales} openOrders={openOrders} setPage={setPage} onNewOrder={startNewOrder} />}
+          {page === "overview" && <Overview language={language} data={data} todayOrders={todayOrders} todaySales={todaySales} openOrders={openOrders} setPage={setPage} onNewOrder={startNewOrder} onImportBackup={() => backupInputRef.current?.click()} onExportBackup={exportBackup} />}
           {page === "customers" && <Customers language={language} customers={data.customers} onChange={(value) => updateData("customers", value)} />}
           {page === "menu" && <FoodMenu language={language} foods={data.foods} onChange={(value) => updateData("foods", value)} />}
           {page === "orders" && <Orders language={language} data={data} customerById={customerById} onChange={(value) => updateData("orders", value)} newOrderRequested={newOrderRequested} onNewOrderRequestHandled={setNewOrderRequested} />}
@@ -331,7 +326,7 @@ function PageHeading({ eyebrow, title, description, action }) {
   return <div className="page-heading"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{description}</p></div>{action}</div>;
 }
 
-function Overview({ language, data, todayOrders, todaySales, openOrders, setPage, onNewOrder }) {
+function Overview({ language, data, todayOrders, todaySales, openOrders, setPage, onNewOrder, onImportBackup, onExportBackup }) {
   const recentOrders = [...data.orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
   return (
     <>
@@ -352,6 +347,15 @@ function Overview({ language, data, todayOrders, todaySales, openOrders, setPage
           <button className="quick-action" onClick={() => setPage("customers")}><span className="quick-icon peach"><Icon name="users" size={17} /></span><span><strong>{text(language, "Add a customer", "ग्राहक जोड़ें")}</strong><small>{text(language, "Save their details and preferences", "उनकी जानकारी और पसंद सहेजें")}</small></span><b><Icon name="arrowRight" size={16} /></b></button>
           <button className="quick-action" onClick={() => setPage("menu")}><span className="quick-icon sage"><Icon name="cookingPot" size={17} /></span><span><strong>{text(language, "Add a food item", "भोजन आइटम जोड़ें")}</strong><small>{text(language, "Keep your menu and prices up to date", "मेन्यू और कीमतें अपडेट रखें")}</small></span><b><Icon name="arrowRight" size={16} /></b></button>
           <button className="quick-action" onClick={() => setPage("promotions")}><span className="quick-icon lavender"><Icon name="sparkles" size={17} /></span><span><strong>{text(language, "Send an offer", "ऑफ़र भेजें")}</strong><small>{text(language, "Prepare a message for a customer group", "ग्राहक समूह के लिए संदेश तैयार करें")}</small></span><b><Icon name="arrowRight" size={16} /></b></button>
+          <div className="backup-info-note" role="note">
+            <Icon name="info" size={15} />
+            <p>
+              {text(language, "Records are saved in this browser. ", "रिकॉर्ड इस ब्राउज़र में सहेजे जाते हैं। ")}
+              <button onClick={onImportBackup}>{text(language, "Import backup", "बैकअप आयात करें")}</button>
+              {" · "}
+              <button onClick={onExportBackup}>{text(language, "Export backup", "बैकअप निर्यात करें")}</button>
+            </p>
+          </div>
         </section>
       </div>
     </>

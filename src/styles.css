@@ -33,8 +33,6 @@ button { cursor: pointer; }
 .nav-icon { display: inline-grid; place-items: center; width: 20px; flex: 0 0 20px; line-height: 1; }
 .nav-count { margin-left: auto; background: #e3eee6; border-radius: 20px; padding: 2px 7px; color: #3b7653; font-size: 10px; }
 .sidebar-bottom { margin-top: auto; }
-.sidebar-backup-note { margin: 0 6px 14px; color: #7a857b; font-size: 9px; line-height: 1.6; }
-.sidebar-backup-note button { padding: 0; border: 0; background: transparent; color: #2f6749; font-size: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .kitchen-card { padding: 15px; background: #f7f6f0; border-radius: 11px; margin: 0 3px 17px; }
 .kitchen-icon { display: grid; place-items: center; width: 25px; height: 25px; color: #3b7653; background: #e5eee5; border-radius: 7px; font-size: 16px; margin-bottom: 10px; }
 .kitchen-card strong { display: block; font-size: 12px; }
@@ -106,6 +104,10 @@ td strong { color: #465248; font-weight: 600; }
 .quick-action strong { color: #455046; font-size: 10px; margin-bottom: 3px; }
 .quick-action small { color: #999f98; font-size: 9px; }
 .quick-action b { margin-left: auto; color: #a3aaa1; font-size: 14px; font-weight: 400; }
+.backup-info-note { display: flex; align-items: flex-start; gap: 8px; padding: 11px 18px; margin-top: 5px; color: #69766b; background: #f6f9f5; border-top: 1px solid #edf1eb; font-size: 10px; line-height: 1.5; }
+.backup-info-note > .app-icon { flex: 0 0 auto; margin-top: 1px; color: #57805d; }
+.backup-info-note p { margin: 0; }
+.backup-info-note button { padding: 0; border: 0; background: transparent; color: #2f6749; font-size: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .privacy-note { margin: 15px 0 0; color: #929990; font-size: 10px; }
 .privacy-note strong { color: #637766; }
 .empty-state { text-align: center; padding: 38px 18px; }
@@ -211,16 +213,13 @@ code { color: #62816a; background: #f2f5f0; padding: 1px 3px; border-radius: 3px
   .overview-grid { grid-template-columns: minmax(0,1.4fr) minmax(235px,1fr); gap: 12px; }
 }
 @media (max-width: 760px) {
-  .sidebar { width: auto; height: calc(108px + env(safe-area-inset-bottom)); inset: auto 0 0; border-right: 0; border-top: 1px solid var(--line); padding: 4px 5px env(safe-area-inset-bottom); display: flex; flex-direction: column; background: #fff; }
-  .brand, .nav-caption { display: none; }
-  .sidebar nav { order: 1; display: flex; flex: 0 0 52px; justify-content: space-around; height: 52px; gap: 0; }
-  .sidebar-bottom { order: 2; display: flex; flex: 1; align-items: center; justify-content: center; margin: 0; }
-  .sidebar-backup-note { max-width: 360px; margin: 0; text-align: center; font-size: 9px; }
-  .sidebar-bottom .kitchen-card, .sidebar-bottom .version-label { display: none; }
+  .sidebar { width: auto; height: calc(62px + env(safe-area-inset-bottom)); inset: auto 0 0; border-right: 0; border-top: 1px solid var(--line); padding: 4px 5px env(safe-area-inset-bottom); display: block; background: #fff; }
+  .brand, .nav-caption, .sidebar-bottom { display: none; }
+  .sidebar nav { display: flex; justify-content: space-around; height: 100%; gap: 0; }
   .nav-item { flex: 1; max-width: 110px; height: 52px; padding: 3px 2px; flex-direction: column; justify-content: center; gap: 2px; font-size: 8px; }
   .nav-icon { font-size: 17px; }
   .nav-count { position: absolute; transform: translate(17px, -15px); padding: 1px 4px; font-size: 8px; }
-  .main-area { margin-left: 0; padding-bottom: calc(108px + env(safe-area-inset-bottom)); }
+  .main-area { margin-left: 0; padding-bottom: calc(62px + env(safe-area-inset-bottom)); }
   .topbar { height: 56px; padding: 0 16px; }
   .topbar-actions { gap: 7px; }
   .locale-tools { gap: 4px; padding: 3px; border-radius: 8px; }
