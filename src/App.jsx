@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { readDatabase, saveDatabase, writeDatabase } from "./database.js";
 
-const STORAGE_KEY = "goodfood-records-v1";
 const DEMO_CUSTOMER_IDS = new Set(["customer-maya", "customer-arjun", "customer-sana", "customer-rajesh", "customer-neha", "customer-anita"]);
 const DEMO_ORDER_IDS = new Set(["order-a120", "order-b245", "order-d489", "order-e512", "order-f634", "order-c367"]);
 const DEMO_FOOD_IDS = new Set(["food-biryani", "food-paneer", "food-dal", "food-roti", "food-kheer", "food-kebab"]);
@@ -70,9 +70,7 @@ function emptyData() {
 }
 
 function readData() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (!saved) return emptyData();
-  const parsed = JSON.parse(saved);
+  const parsed = readDatabase();
   const savedCustomers = Array.isArray(parsed.customers) ? parsed.customers.filter((customer) => !DEMO_CUSTOMER_IDS.has(customer.id)) : [];
   const savedFoods = Array.isArray(parsed.foods) ? parsed.foods.filter((food) => !DEMO_FOOD_IDS.has(food.id)) : [];
   const savedOrders = Array.isArray(parsed.orders) ? parsed.orders.filter((order) => !DEMO_ORDER_IDS.has(order.id)) : [];
@@ -89,7 +87,7 @@ function readData() {
       return { ...promotion, target: legacyHindiType[promotion.target] || promotion.target };
     }),
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+  writeDatabase(cleaned);
   return cleaned;
 }
 
@@ -185,7 +183,7 @@ function App() {
   useEffect(() => {
     if (!hasChanged.current) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      saveDatabase(data);
       setStorageError("");
     } catch (error) {
       console.error("ब्राउज़र में रिकॉर्ड सहेजे नहीं जा सके।", error);
@@ -289,6 +287,13 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
+          <input ref={backupInputRef} type="file" accept="application/json,.json" onChange={importBackup} hidden />
+          <p className="sidebar-backup-note">
+            {text(language, "Records are saved in this browser. ", "रिकॉर्ड इस ब्राउज़र में सहेजे जाते हैं। ")}
+            <button onClick={() => backupInputRef.current?.click()}>{text(language, "Import backup", "बैकअप आयात करें")}</button>
+            {" · "}
+            <button onClick={exportBackup}>{text(language, "Export backup", "बैकअप निर्यात करें")}</button>
+          </p>
           <div className="kitchen-card"><span className="kitchen-icon"><Icon name="heart" size={16} /></span><strong>{text(language, "Made with care", "देखभाल से बनाया गया")}</strong><p>{text(language, "A little organization for your home kitchen.", "आपकी घरेलू रसोई के लिए आसान प्रबंधन।")}</p></div>
           <span className="version-label">{text(language, "YOUR PRIVATE KITCHEN", "आपकी निजी रसोई")}</span>
         </div>
@@ -306,9 +311,6 @@ function App() {
               <span className="today-label"><Icon name="calendar" size={15} />{new Date().toLocaleDateString(language === "hi" ? "hi-IN" : "en-GB", { weekday: "short", day: "numeric", month: "short" })}</span>
             </div>
             {installPrompt && <button className="button button-outline button-small install-button" onClick={installApp}>{text(language, "Install app", "ऐप इंस्टॉल करें")}</button>}
-            <input ref={backupInputRef} type="file" accept="application/json,.json" onChange={importBackup} hidden />
-            <button className="button button-outline button-small" onClick={() => backupInputRef.current?.click()}><Icon name="plus" size={15} /><span>{text(language, "Import backup", "बैकअप आयात करें")}</span></button>
-            <button className="button button-outline button-small" onClick={exportBackup}><Icon name="download" size={15} /><span>{text(language, "Export backup", "बैकअप निर्यात करें")}</span></button>
           </div>
         </header>
         {storageError && <div className="storage-alert" role="alert">{storageError}</div>}
@@ -352,7 +354,6 @@ function Overview({ language, data, todayOrders, todaySales, openOrders, setPage
           <button className="quick-action" onClick={() => setPage("promotions")}><span className="quick-icon lavender"><Icon name="sparkles" size={17} /></span><span><strong>{text(language, "Send an offer", "ऑफ़र भेजें")}</strong><small>{text(language, "Prepare a message for a customer group", "ग्राहक समूह के लिए संदेश तैयार करें")}</small></span><b><Icon name="arrowRight" size={16} /></b></button>
         </section>
       </div>
-      <p className="privacy-note">{text(language, "Your records are saved in this browser on this device. Use", "आपके रिकॉर्ड इस डिवाइस के ब्राउज़र में सहेजे जाते हैं। प्रतिलिपि रखने के लिए")} <strong>{text(language, "Export backup", "बैकअप निर्यात")}</strong> {text(language, "regularly to keep a copy.", "का नियमित उपयोग करें।")}</p>
     </>
   );
 }
